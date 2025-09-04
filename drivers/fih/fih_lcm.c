@@ -28,7 +28,7 @@
 #define FIH_PROC_PATH_AWER_STATUS "awer_status"
 #define FIH_PROC_FULL_PATH_AWER_CNT "AllHWList/LCM0/awer_cnt"
 #define FIH_PROC_FULL_PATH_AWER_STATUS "AllHWList/LCM0/awer_status"
-
+#define COLORMODE_STRING_SIZE 3
 void fih_awer_cnt_set(char *info);
 void fih_awer_status_set(char *info);
 #ifdef CONFIG_PANEL_COLOR_MANAGERIAL
@@ -131,7 +131,8 @@ static ssize_t fih_lcm_write_color_settings(struct file *file, const char __user
     if (copy_from_user(buf, buffer, count))
         return -EFAULT;
 
-	pr_err("fih_lcm_write_color_settings\n");
+	buf[COLORMODE_STRING_SIZE]=0;
+	pr_err("fih_lcm_write_color_settings %s\n",buf);
 
     res = fih_mdss_color_config(simple_strtoul(buf, NULL, 16));
 

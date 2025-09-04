@@ -1,8 +1,8 @@
 dtb-$(CONFIG_ARCH_MSM8998) += \
-	msm8998-mtp_NB1_EVB.dtb \
-	msm8998-mtp_NB1_EVB1.dtb \
-	msm8998-mtp_NB1_EVB2.dtb \
-	msm8998-mtp_NB1_EVT.dtb \
+  msm8998-mtp_NB1_EVB.dtb \
+  msm8998-mtp_NB1_EVB1.dtb \
+  msm8998-mtp_NB1_EVB2.dtb \
+  msm8998-mtp_NB1_EVT.dtb \
   msm8998-mtp_NB1_EVT0_5.dtb \
   msm8998-mtp_NB1_EVT1.dtb \
   msm8998-mtp_NB1_EVT1_SS.dtb \

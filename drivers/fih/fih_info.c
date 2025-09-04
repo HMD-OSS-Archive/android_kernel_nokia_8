@@ -11,12 +11,7 @@ static int fih_info_proc_open_project_show(struct seq_file *m, void *v)
 	char msg[8];
 
 	switch (fih_hwid_fetch(FIH_HWID_PRJ)) {
-		case FIH_PRJ_PM1: strcpy(msg, "PM1"); break;
 		case FIH_PRJ_NB1: strcpy(msg, "NB1"); break;
-		case FIH_PRJ_A1N: strcpy(msg, "A1N"); break;
-		case FIH_PRJ_RCL: strcpy(msg, "RCL"); break;
-		case FIH_PRJ_LFC: strcpy(msg, "LFC"); break;
-		case FIH_PRJ_S5: strcpy(msg, "S5"); break;
 		default: strcpy(msg, "N/A"); break;
 	}
 	seq_printf(m, "%s\n", msg);
@@ -86,6 +81,8 @@ static int fih_info_proc_open_rf_band_show(struct seq_file *m, void *v)
 			strcpy(msg, "G_850_900_1800_1900^W_1_2_5_8^L_1_2_3_4_5_7_8_12_13_17_20_28_38_40_41_66"); break;
 		case FIH_BAND_G_850_900_1800_1900_W_1_2_4_5_8_L_1_2_3_4_5_7_8_12_13_17_20_28_38_40_41_SS:
 			strcpy(msg, "G_850_900_1800_1900^W_1_2_4_5_8^L_1_2_3_4_5_7_8_12_13_17_20_28_38_40_41"); break;
+		case FIH_BAND_G_850_900_1800_1900_W_1_2_5_8_T_34_39_L_1_3_5_7_8_28_34_38_39_40_41: /* F11 */
+			strcpy(msg, "G_850_900_1800_1900^W_1_2_5_8^T_34_39^L_1_3_5_7_8_28_34_38_39_40_41"); break;
 		/* NO BAND */
 		case FIH_RF_NONE: strcpy(msg, "NONE"); break;
 		default: strcpy(msg, "UNKNOWN\n"); break;
@@ -100,20 +97,12 @@ static int fih_info_proc_open_hwmodel_show(struct seq_file *m, void *v)
 	char msg[8];
 
 	switch (fih_hwid_fetch(FIH_HWID_PRJ)) {
-		case FIH_PRJ_PM1: strcpy(msg, "PM1"); break;
 		case FIH_PRJ_NB1: 
 			if (fih_hwid_fetch(FIH_HWID_RF) == FIH_BAND_G_850_900_1800_1900_W_1_2_5_8_T_34_39_L_1_2_3_4_5_7_8_20_28_38_39_40_41)
 				strcpy(msg, "B1C"); 
 			else
 				strcpy(msg, "NB1"); 
 			break;
-		case FIH_PRJ_A1N:
-			if (fih_hwid_fetch(FIH_HWID_RF) == FIH_BAND_G_850_900_1800_1900_W_1_2_5_8_C_0_T_34_39_L_1_2_3_4_5_7_8_20_28_34_38_39_40_41_SS)
-				strcpy(msg, "A1C"); 
-			else
-				strcpy(msg, "A1N");
-			break;
-		case FIH_PRJ_S5: strcpy(msg, "S5"); break;
 		default: strcpy(msg, "N/A"); break;
 	}
 
@@ -169,6 +158,7 @@ static int fih_info_proc_open_simslot_show(struct seq_file *m, void *v)
 		case FIH_BAND_G_850_900_1800_1900_W_1_2_5_8_C_0_T_34_39_L_1_2_3_4_5_7_8_20_28_34_38_39_40_41_SS: slot = 1; break;
 		case FIH_BAND_G_850_900_1800_1900_W_1_2_5_8_L_1_2_3_4_5_7_8_12_13_17_20_28_38_40_41_66_SS: slot = 1; break;
 		case FIH_BAND_G_850_900_1800_1900_W_1_2_4_5_8_L_1_2_3_4_5_7_8_12_13_17_20_28_38_40_41_SS: slot = 1; break;
+		case FIH_BAND_G_850_900_1800_1900_W_1_2_5_8_T_34_39_L_1_3_5_7_8_28_34_38_39_40_41: slot = 2; break; /* F11 */
 		default: slot = 0; break;
 	}
 	seq_printf(m, "%d\n", slot);
