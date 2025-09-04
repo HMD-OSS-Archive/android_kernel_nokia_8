@@ -3336,6 +3336,7 @@ static void fts_interrupt_enable(struct fts_ts_info *info)
                   ktime_set(0, 10000000), HRTIMER_MODE_REL);
 #else
     enable_irq(info->client->irq);
+    enable_irq_wake(info->client->irq);
 #endif
 }
 

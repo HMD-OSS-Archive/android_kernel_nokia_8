@@ -11,6 +11,8 @@ enum {
 	FIH_PRJ_A1N,
 	FIH_PRJ_RCL,
 	FIH_PRJ_LFC,
+	FIH_PRJ_HAT,
+	FIH_PRJ_S5,
 	FIH_PRJ_MAX
 };
 

@@ -557,6 +557,7 @@ static void __mdss_fb_brightness_work(struct work_struct *work)
        exit_aod_set_bl=0;
        if(mfd->bl_aod_recovery!=0 && mdss_fb_is_power_on_interactive(mfd)&&fih_get_blank_mode()==FB_BLANK_UNBLANK){
            mdss_fb_set_backlight(mfd, mfd->bl_aod_recovery);
+		   mfd->bl_level_scaled=mfd->bl_aod_recovery;
        }
        mfd->allow_bl_update = false;
        mutex_unlock(&mfd->bl_lock);
@@ -1779,7 +1780,8 @@ void mdss_fb_set_backlight(struct msm_fb_data_type *mfd, u32 bkl_lvl)
 			exit_aod_set_bl=0;
 		}
 		if(exit_aod_set_bl&&fih_get_blank_mode()!=FB_BLANK_POWERDOWN){
-			mfd->bl_aod_recovery= bkl_lvl;
+			mfd->bl_aod_recovery= temp;
+			mfd->bl_level = bkl_lvl;
 			pr_info("backlight level(%d) pending\n", bkl_lvl);
 		}else{
 			if (mfd->bl_level_scaled == temp) {

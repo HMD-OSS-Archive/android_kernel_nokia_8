@@ -37,6 +37,7 @@
 static bool first_apsd_complete = 0;
 #endif
 /* end FIH - A1N-5 */
+static bool forecast_charging = false;
 
 #define smblib_err(chg, fmt, ...)		\
 	pr_err("%s: %s: " fmt, chg->name,	\
@@ -1679,6 +1680,11 @@ int smblib_get_prop_batt_status(struct smb_charger *chg,
 			val->intval = POWER_SUPPLY_STATUS_DISCHARGING;
 			break;
 		}
+		return rc;
+	}
+
+	if (forecast_charging) {
+		val->intval = POWER_SUPPLY_STATUS_CHARGING;
 		return rc;
 	}
 
@@ -3581,6 +3587,7 @@ irqreturn_t smblib_handle_chg_state_change(int irq, void *data)
 	/*  - NB1-680 - Add more log for usb attach/detach */
 	pr_info("%s: %s: IRQ: %s\n", chg->name, __func__, irq_data->name);
 	/* end FIH - NB1-680 */
+	forecast_charging = false;
 
 	rc = smblib_read(chg, BATTERY_CHARGER_STATUS_1_REG, &stat);
 	if (rc < 0) {
@@ -3808,6 +3815,7 @@ irqreturn_t smblib_handle_usb_plugin(int irq, void *data)
 {
 	struct smb_irq_data *irq_data = data;
 	struct smb_charger *chg = irq_data->parent_data;
+	union power_supply_propval val = {0, };
 
 	mutex_lock(&chg->lock);
 	if (chg->pd_hard_reset)
@@ -3818,6 +3826,11 @@ irqreturn_t smblib_handle_usb_plugin(int irq, void *data)
 	/*  - NB1-680 - Add more log for usb attach/detach */
 	pr_info("%s: %s: IRQ: %s\n", chg->name, __func__, irq_data->name);
 	/* end FIH - NB1-680 */
+	if (smblib_get_prop_usb_present(chg, &val) < 0 || !val.intval) {
+		forecast_charging = false;
+	} else {
+		forecast_charging = true;
+	}
 
 	mutex_unlock(&chg->lock);
 	return IRQ_HANDLED;
@@ -4525,10 +4538,6 @@ static void smblib_usb_typec_change(struct smb_charger *chg)
 {
 	int rc;
 
-	/* -6004 - Cannot meet the requirement of Google Dual-port Type-C charger */
-	int typec_mode = 0;
-	/* end NB1-6004 */
-
 	rc = smblib_multibyte_read(chg, TYPE_C_STATUS_1_REG,
 							chg->typec_status, 5);
 	if (rc < 0) {
@@ -4543,17 +4552,6 @@ static void smblib_usb_typec_change(struct smb_charger *chg)
 
 	if (chg->typec_status[3] & TYPEC_VCONN_OVERCURR_STATUS_BIT)
 		schedule_work(&chg->vconn_oc_work);
-
-	/* -6004 - Cannot meet the requirement of Google Dual-port Type-C charger */
-	typec_mode = smblib_get_prop_ufp_mode(chg);
-	if (typec_mode == POWER_SUPPLY_TYPEC_SOURCE_MEDIUM) {
-		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, TYPEC_MEDIUM_CURRENT_UA);
-	} else if (typec_mode == POWER_SUPPLY_TYPEC_SOURCE_HIGH) {
-		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, TYPEC_HIGH_CURRENT_UA);
-	} else {
-		vote(chg->usb_icl_votable, LEGACY_UNKNOWN_VOTER, true, TYPEC_MEDIUM_CURRENT_UA);
-	}
-	/* end NB1-6004 */
 
 	power_supply_changed(chg->usb_psy);
 }
@@ -4585,7 +4583,14 @@ irqreturn_t smblib_handle_dc_plugin(int irq, void *data)
 {
 	struct smb_irq_data *irq_data = data;
 	struct smb_charger *chg = irq_data->parent_data;
+	union power_supply_propval val = {0, };
 
+	pr_info("%s: %s: IRQ: %s\n", chg->name, __func__, irq_data->name);
+	if (smblib_get_prop_dc_present(chg, &val) < 0 || !val.intval) {
+		forecast_charging = false;
+	} else {
+		forecast_charging = true;
+	}
 	power_supply_changed(chg->dc_psy);
 	return IRQ_HANDLED;
 }

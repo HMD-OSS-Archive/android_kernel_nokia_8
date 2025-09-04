@@ -1857,7 +1857,11 @@ void fih_set_level(int value)
 	int rc = 0, vmax = 0;
 
 	if(value == 9)
+#ifdef CONFIG_FIH_A1N
+		vmax = 3000;
+#else
 		vmax = QPNP_HAP_VMAX_MAX_MV;
+#endif
 	else
 		vmax = g_default_voltage;
 

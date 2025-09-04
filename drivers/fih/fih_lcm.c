@@ -124,17 +124,18 @@ static ssize_t fih_lcm_write_color_settings(struct file *file, const char __user
         return -EINVAL;
 
     buf = kmalloc(count, GFP_KERNEL);
+
     if (!buf)
         return -ENOMEM;
 
     if (copy_from_user(buf, buffer, count))
         return -EFAULT;
+
 	pr_err("fih_lcm_write_color_settings\n");
 
+    res = fih_mdss_color_config(simple_strtoul(buf, NULL, 16));
 
-    res = fih_mdss_color_config(simple_strtoull(buf, NULL, 0));
-
-    if (res < 0)
+	if (res < 0)
     {
         kfree(buf);
         return res;
@@ -149,6 +150,7 @@ static struct file_operations color_file_ops = {
     .owner   = THIS_MODULE,
     .write   = fih_lcm_write_color_settings,
     .read    = seq_read,
+    .llseek  = seq_lseek,
     .open    = fih_lcm_open_color_settings,
     .release = single_release
 };

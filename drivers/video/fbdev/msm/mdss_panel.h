@@ -960,6 +960,7 @@ struct mdss_panel_info {
 	int aod_bl_backup;
 	bool panel_power_init;
 	bool color_managerial;
+	int color_managerial_init;
 };
 
 struct mdss_panel_timing {

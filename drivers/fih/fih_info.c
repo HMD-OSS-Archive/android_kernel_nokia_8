@@ -16,6 +16,7 @@ static int fih_info_proc_open_project_show(struct seq_file *m, void *v)
 		case FIH_PRJ_A1N: strcpy(msg, "A1N"); break;
 		case FIH_PRJ_RCL: strcpy(msg, "RCL"); break;
 		case FIH_PRJ_LFC: strcpy(msg, "LFC"); break;
+		case FIH_PRJ_S5: strcpy(msg, "S5"); break;
 		default: strcpy(msg, "N/A"); break;
 	}
 	seq_printf(m, "%s\n", msg);
@@ -112,6 +113,7 @@ static int fih_info_proc_open_hwmodel_show(struct seq_file *m, void *v)
 			else
 				strcpy(msg, "A1N");
 			break;
+		case FIH_PRJ_S5: strcpy(msg, "S5"); break;
 		default: strcpy(msg, "N/A"); break;
 	}
 
